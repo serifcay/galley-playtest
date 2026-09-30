@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Galley · Play test</title>
+<title>Littera · Play test</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -206,7 +206,7 @@
 </style>
 </head>
 <body>
-<div class="nojs" id="nojs">Galley needs JavaScript. If this message stays, open the page in Chrome, Safari or Firefox.<br>Galley JavaScript gerektirir. Bu mesaj kalırsa sayfayı Chrome, Safari veya Firefox'ta aç.</div>
+<div class="nojs" id="nojs">Littera needs JavaScript. If this message stays, open the page in Chrome, Safari or Firefox.<br>Littera JavaScript gerektirir. Bu mesaj kalırsa sayfayı Chrome, Safari veya Firefox'ta aç.</div>
 <div class="app">
   <div class="topbar">
     <button class="back" id="backBtn" aria-label="Back" hidden>&#8592;</button>
@@ -218,7 +218,7 @@
 
   <!-- HOME -->
   <section class="screen" id="home">
-    <div class="brand">GALLEY</div>
+    <div class="brand">LITTERA</div>
     <p class="tagline" data-t="tagline"></p>
     <p class="goal" data-t="goal"></p>
     <p class="testnote" data-t="testnote"></p>
@@ -257,7 +257,7 @@
       <div><span class="lbl" id="slipLbl"></span><div class="slips" id="slips"></div></div>
     </div>
     <div class="levelrow"><span class="lv" id="levelLbl"></span><span class="mode" id="modeLbl"></span></div>
-    <div class="press" id="press" role="button" tabindex="0" aria-label="Galley stack">
+    <div class="press" id="press" role="button" tabindex="0" aria-label="Letter stack">
       <div class="hand" id="hand">&#128070;</div>
       <div class="lamp-glow"></div>
       <div class="uparrow" id="upArrow">&#8593;</div>
@@ -343,7 +343,7 @@ const T = {
       s1: 'First impressions', s2: 'Controls', s3: 'Difficulty & clues', s4: 'Ideas', s5: 'Anything else',
       fun: 'How fun was it?', funLo: 'boring', funHi: 'great fun',
       again: 'Would you play it again tomorrow?', againO: ['Yes', 'Maybe', 'No'],
-      describe: 'Describe Galley to a friend in one sentence.',
+      describe: 'Describe Littera to a friend in one sentence.',
       clarity: 'Were tap / flick-left / flick-up easy to understand?', clarityLo: 'confusing', clarityHi: 'obvious',
       confused: 'Was anything confusing? (pick any)', confusedO: ['Slips', 'Throw away vs keep for later', 'Hints & ads', 'Stars & points', 'Run multiplier', 'Specialty ✦ blocks', 'Nothing'],
       tutorial: 'Did the guided first level make it clear how to play?', tutorialO: ['Yes', 'Mostly', 'No', 'Skipped it'],
@@ -358,11 +358,11 @@ const T = {
       modes: 'Which of these would you want? (pick any)',
       modesO: ['Stop the Press: bank a bonus or risk it for more', 'Twin Press: two stacks at once', 'Loose Type: no slip limit, just relax', 'Themed chapters (animals, food, …)', 'Play or compete with friends', 'A timed mode'],
       daily: 'Did you try the Daily Challenge? Would you come back for it?', dailyO: ['Yes, daily', 'Sometimes', 'No', "Didn't try it"],
-      idea: 'Your best idea to make Galley better:',
+      idea: 'Your best idea to make Littera better:',
       other: 'Anything else? Bugs, likes, dislikes…',
       name: 'Your name (optional)',
       build: 'Show my answers', copy: 'Copy answers', share: 'Share…', copied: 'Copied! Paste it into a message back.',
-      summaryHead: 'Galley play-test feedback',
+      summaryHead: 'Littera play-test feedback',
       shared: 'Thanks! 🙏',
     },
   },
@@ -414,7 +414,7 @@ const T = {
       s1: 'İlk izlenim', s2: 'Kontroller', s3: 'Zorluk ve ipuçları', s4: 'Fikirler', s5: 'Başka bir şey',
       fun: 'Ne kadar eğlenceliydi?', funLo: 'sıkıcı', funHi: 'çok eğlenceli',
       again: 'Yarın tekrar oynar mısın?', againO: ['Evet', 'Belki', 'Hayır'],
-      describe: "Galley'i bir arkadaşına tek cümleyle anlat.",
+      describe: "Littera'yı bir arkadaşına tek cümleyle anlat.",
       clarity: 'Dokun / sola fırlat / yukarı fırlat kolay anlaşıldı mı?', clarityLo: 'kafa karıştırıcı', clarityHi: 'çok net',
       confused: 'Kafa karıştıran bir şey oldu mu? (birden fazla seçebilirsin)', confusedO: ['Hata hakkı', 'At / sonraya sakla farkı', 'İpucu ve reklam', 'Yıldız ve puan', 'Seri çarpanı', 'Özel ✦ harfler', 'Hiçbiri'],
       tutorial: 'Rehberli ilk seviye nasıl oynanacağını anlattı mı?', tutorialO: ['Evet', 'Çoğunlukla', 'Hayır', 'Atladım'],
@@ -429,11 +429,11 @@ const T = {
       modes: 'Hangilerini isterdin? (birden fazla seçebilirsin)',
       modesO: ['Baskıyı Durdur: bonusu al ya da daha fazlası için riske gir', 'İkiz Baskı: aynı anda iki yığın', 'Serbest Dizgi: hata sınırı yok, sadece rahatla', 'Temalı bölümler (hayvanlar, yemek…)', 'Arkadaşlarla oyna ya da yarış', 'Süreli mod'],
       daily: 'Günlük Bulmacayı denedin mi? Onun için geri gelir misin?', dailyO: ['Evet, her gün', 'Bazen', 'Hayır', 'Denemedim'],
-      idea: "Galley'i daha iyi yapmak için en iyi fikrin:",
+      idea: "Littera'yı daha iyi yapmak için en iyi fikrin:",
       other: 'Başka bir şey? Hatalar, sevdiklerin, sevmediklerin…',
       name: 'Adın (isteğe bağlı)',
       build: 'Cevaplarımı göster', copy: 'Cevapları kopyala', share: 'Paylaş…', copied: 'Kopyalandı! Bir mesaja yapıştırıp geri gönder.',
-      summaryHead: 'Galley deneme görüşleri',
+      summaryHead: 'Littera deneme görüşleri',
       shared: 'Teşekkürler! 🙏',
     },
   },
@@ -1086,7 +1086,7 @@ async function copySummary() {
   $('fbDone').textContent = t().fb.copied;
 }
 async function shareSummary() {
-  try { await navigator.share({ title: 'Galley feedback', text: summaryText() }); $('fbDone').textContent = t().fb.shared; } catch (e) {}
+  try { await navigator.share({ title: 'Littera feedback', text: summaryText() }); $('fbDone').textContent = t().fb.shared; } catch (e) {}
 }
 
 // ---------------------------------------------------------------- language
