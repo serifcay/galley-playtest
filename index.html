@@ -315,7 +315,7 @@ const T = {
     levels: 'Levels', howto: 'How to play', giveFeedback: 'Give feedback',
     totals: (s, p) => `<b>★ ${s}</b> stars · <b>${p}</b> points`,
     levelsNote: 'A taste of the real game: 30 levels picked from its 3000, from easy 4-letter words to 8-letter ones, with a proverb or idiom now and then (❝).',
-    dailyTitle: 'Daily Challenge', dailyBody: 'Five words, the same for everyone today. Best of three tries. (In the app, scores go on a daily leaderboard.)',
+    dailyTitle: 'Daily Challenge', dailyBody: 'Five words, the same for everyone today. You have three tries: if you run out of slips, the next try picks up where you left off. (In the app, scores go on a daily leaderboard.)',
     triesLeft: n => `${n} of 3 tries left today`, best: s => `Your best today: ${s}`,
     startTry: n => `Start try ${n} of 3`, comeBack: "Come back for tomorrow's challenge", newIn: t => `New challenge in ${t}`,
     score: 'Score', run: 'Run', slips: 'Slips', slipsLeft: n => `Slips · ${n} left`,
@@ -334,7 +334,7 @@ const T = {
     tryAgain: 'Try again (new word)', oneMoreTry: '▶ One more try (watch an ad)',
     adTitle: 'Ad', adBody: 'In the real app a short video ad plays here.', adSkip: 'Close',
     dailyDone: 'Challenge complete', dailyOut: 'Out of slips', dailyScore: s => `${s} points`,
-    wordsDone: n => `${n} of 5 words solved`, nextTry: 'Next try', seeFeedback: 'Give feedback',
+    wordsDone: n => `${n} of 5 words solved`, nextTry: 'Keep going', seeFeedback: 'Give feedback',
     howtoHtml: `
       <div class="panel"><h3>The goal</h3><p>Read the clue and spell the word. Letters arrive one at a time in a stack. You only ever play the <b>glowing letter at the bottom</b>.</p></div>
       <div class="panel"><h3>Two moves</h3><ul>
@@ -387,7 +387,7 @@ const T = {
     levels: 'Seviyeler', howto: 'Nasıl oynanır', giveFeedback: 'Görüş bildir',
     totals: (s, p) => `<b>★ ${s}</b> yıldız · <b>${p}</b> puan`,
     levelsNote: 'Asıl oyundan bir tadımlık: 3000 seviyeden seçilmiş 30 seviye; kolay 4 harfli kelimelerden 8-9 harflilere, arada atasözü ve deyimlerle (❝).',
-    dailyTitle: 'Günlük Bulmaca', dailyBody: 'Beş kelime, bugün herkes için aynı. Üç denemenin en iyisi sayılır. (Uygulamada puanlar günlük sıralamaya girer.)',
+    dailyTitle: 'Günlük Bulmaca', dailyBody: 'Beş kelime, bugün herkes için aynı. Üç deneme hakkın var: hata hakkın biterse sonraki deneme kaldığın yerden devam eder. (Uygulamada puanlar günlük sıralamaya girer.)',
     triesLeft: n => `Bugün 3 denemeden ${n} hakkın kaldı`, best: s => `Bugünkü en iyi puanın: ${s}`,
     startTry: n => `${n}. denemeyi başlat (3 hak)`, comeBack: 'Yarınki bulmaca için tekrar gel', newIn: t => `Yeni bulmaca ${t} sonra`,
     score: 'Puan', run: 'Seri', slips: 'Hata', slipsLeft: n => `Hata · ${n} hak`,
@@ -406,7 +406,7 @@ const T = {
     tryAgain: 'Tekrar dene (yeni kelime)', oneMoreTry: '▶ 1 hak daha almak için reklam izle',
     adTitle: 'Reklam', adBody: 'Gerçek uygulamada burada kısa bir video reklam oynar.', adSkip: 'Kapat',
     dailyDone: 'Bulmaca tamamlandı', dailyOut: 'Hata hakkın bitti', dailyScore: s => `${s} puan`,
-    wordsDone: n => `5 kelimeden ${n} tanesini bildin`, nextTry: 'Sonraki deneme', seeFeedback: 'Görüş bildir',
+    wordsDone: n => `5 kelimeden ${n} tanesini bildin`, nextTry: 'Devam et', seeFeedback: 'Görüş bildir',
     howtoHtml: `
       <div class="panel"><h3>Amaç</h3><p>İpucunu oku ve kelimeyi yaz. Harfler bir sütunda sırayla, tek tek gelir. Her seferinde <b>en alttaki parlayan harfle</b> oynarsın.</p></div>
       <div class="panel"><h3>İki hamle</h3><ul>
@@ -720,12 +720,20 @@ function dailyWords() {
 function dailyState() { return store.get('daily.' + dayKey() + '.' + lang, { tries: 0, best: 0 }); }
 function startDaily() {
   const d = dailyState();
-  if (d.tries >= 3) return;
+  if (dailyLeft(d) <= 0) return;
   d.tries++; store.set('daily.' + dayKey() + '.' + lang, d);
   stats.dailyTries++; saveStats();
   newRound(dailyWords(), { mode: 'daily' });
+  // A later try picks up where the last one ran out of slips.
+  if (d.saved) {
+    G.idx = d.saved.idx; loadWord();
+    Object.assign(G, { score: d.saved.score, slots: d.saved.slots, fillOrder: d.saved.fillOrder,
+      hintsUsed: d.saved.hintsUsed, specialtyUsed: d.saved.specialtyUsed });
+    seed();
+  }
   show('game'); clearBlocks(); render();
 }
+const dailyLeft = d => d.done ? 0 : 3 - d.tries;
 
 // ---------------------------------------------------------------- round end cards
 function roundOver() {
@@ -765,13 +773,16 @@ function roundOver() {
 function dailyOver() {
   const d = dailyState();
   const done = G.cleared ? 5 : G.idx;
-  d.best = Math.max(d.best, G.score); store.set('daily.' + dayKey() + '.' + lang, d);
+  d.best = Math.max(d.best, G.score);
+  if (G.cleared) { d.done = true; delete d.saved; }
+  else d.saved = { idx: G.idx, score: G.score, slots: G.slots, fillOrder: G.fillOrder, hintsUsed: G.hintsUsed, specialtyUsed: G.specialtyUsed };
+  store.set('daily.' + dayKey() + '.' + lang, d);
   showCard(`
     <p class="eyebrow">${upper(G.cleared ? t().dailyDone : t().dailyOut)}</p>
     <p class="answer">${t().dailyScore(G.score)}</p>
     <p class="sub">${t().wordsDone(done)} · ${t().best(d.best)}</p>
     ${!G.cleared && G.refills < 1 ? `<button class="btn" data-act="adslip">${t().oneMoreTry}</button>` : ''}
-    ${d.tries < 3 ? `<button class="btn primary" data-act="daily">${t().nextTry}</button>` : `<p class="sub">${t().comeBack}</p>`}
+    ${dailyLeft(d) > 0 ? `<button class="btn primary" data-act="daily">${t().nextTry}</button>` : `<p class="sub">${t().comeBack}</p>`}
     <button class="btn feedback" data-act="feedback">${t().seeFeedback}</button>
     <button class="link" data-act="home">${t().home}</button>`);
 }
@@ -991,7 +1002,7 @@ document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(b.dat
 $('continueBtn').onclick = () => { unlockAudio(); const p = progress(); startLevel(Math.min(p.level, LEVELS())); };
 
 function renderHome() {
-  const d = dailyState(), left = 3 - d.tries;
+  const d = dailyState(), left = dailyLeft(d);
   const homeDaily = document.querySelector('.daily-btn');
   homeDaily.classList.toggle('waiting', d.tries === 0);
   $('dailyHome').textContent = d.tries === 0 ? t().dailyWaiting : left > 0 ? t().dailyBest(d.best, left) : t().dailyDoneHome;
@@ -1012,7 +1023,7 @@ function renderLevels() {
 }
 $('levelGrid').addEventListener('click', e => { const b = e.target.closest('[data-lv]'); if (b && !b.disabled) startLevel(+b.dataset.lv); });
 function renderDaily() {
-  const d = dailyState(), left = 3 - d.tries;
+  const d = dailyState(), left = dailyLeft(d);
   $('dailyStatus').innerHTML = t().triesLeft(left) + (d.best ? '<br>' + t().best(d.best) : '');
   const b = $('dailyStart'); b.textContent = left > 0 ? t().startTry(d.tries + 1) : t().comeBack; b.disabled = left <= 0;
   const now = new Date(), next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
