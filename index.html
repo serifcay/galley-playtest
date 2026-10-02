@@ -310,7 +310,7 @@ const T = {
     tagline: 'Find the word, one letter at a time.',
     goal: 'Spell the word from the clue, one letter at a time.',
     testnote: 'Play-test build · thanks for trying it!',
-    continueL: n => `Continue · Level ${n}`, allDone: 'All demo levels done · replay any',
+    continueL: n => `Continue · Level ${n}`, start: 'Start', allDone: 'All demo levels done · replay any',
     daily: 'Daily Challenge', dailyWaiting: "Today's puzzle is waiting · 3 tries", dailyBest: (s, n) => `Best today: ${s} · ${n} ${n === 1 ? 'try' : 'tries'} left`, dailyDoneHome: 'Done for today · come back tomorrow',
     levels: 'Levels', howto: 'How to play', giveFeedback: 'Give feedback',
     totals: (s, p) => `<b>★ ${s}</b> stars · <b>${p}</b> points`,
@@ -382,7 +382,7 @@ const T = {
     tagline: 'Kelimeyi harf harf bul.',
     goal: 'İpucundaki kelimeyi harf harf bul.',
     testnote: 'Deneme sürümü · denediğin için teşekkürler!',
-    continueL: n => `Devam et · ${n}. seviye`, allDone: 'Tüm deneme seviyeleri bitti · istediğini tekrar oyna',
+    continueL: n => `Devam et · ${n}. seviye`, start: 'Başla', allDone: 'Tüm deneme seviyeleri bitti · istediğini tekrar oyna',
     daily: 'Günlük Bulmaca', dailyWaiting: 'Bugünün bulmacası seni bekliyor · 3 hak', dailyBest: (s, n) => `Bugünkü en iyi: ${s} · ${n} hak kaldı`, dailyDoneHome: 'Bugünlük bitti · yarın tekrar gel',
     levels: 'Seviyeler', howto: 'Nasıl oynanır', giveFeedback: 'Görüş bildir',
     totals: (s, p) => `<b>★ ${s}</b> yıldız · <b>${p}</b> puan`,
@@ -998,7 +998,7 @@ function renderHome() {
   const p = progress();
   const stars = Object.values(p.stars).reduce((a, b) => a + b, 0);
   $('totals').innerHTML = t().totals(stars, p.score);
-  $('continueLbl').textContent = p.level > LEVELS() ? t().allDone : t().continueL(p.level);
+  $('continueLbl').textContent = p.level > LEVELS() ? t().allDone : p.level <= 1 ? t().start : t().continueL(p.level);
 }
 function renderLevels() {
   const p = progress();
