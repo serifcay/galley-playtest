@@ -54,6 +54,8 @@
   .btn.primary{ background:linear-gradient(155deg, var(--lamp), var(--bronze)); color:var(--panel-light); border-color:transparent;
     padding:17px 16px; font-size:16px; box-shadow:0 6px 16px rgba(184,134,58,.28); }
   .btn.ghost{ background:transparent; }
+  .daily-btn small{ display:block; font-size:12px; font-weight:500; color:var(--muted); margin-top:2px; }
+  .daily-btn.waiting{ border-color:var(--lamp); border-width:1.5px; }
   .btn.feedback{ border-color:var(--lamp); color:var(--bronze); }
   .btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
   .ico{ color:var(--lamp); font-size:17px; line-height:1; }
@@ -96,12 +98,12 @@
     background:linear-gradient(180deg, var(--steel-light), var(--steel)); box-shadow:0 3px 10px rgba(80,64,42,.22); }
   .bed::before{ content:''; position:absolute; left:50%; bottom:100%; transform:translateX(-50%); width:96px; height:26px;
     background:radial-gradient(ellipse at center, rgba(138,74,58,.2), transparent 75%); }
-  .hellbox{ position:absolute; left:6px; bottom:0; width:50px; height:50px; color:var(--steel); transition:color .15s, transform .15s;
+  .hellbox{ position:absolute; right:6px; bottom:0; width:50px; height:50px; color:var(--steel); transition:color .15s, transform .15s;
     filter:drop-shadow(0 2px 2px rgba(46,38,25,.25)); }
   .hellbox svg{ width:50px; height:50px; display:block; }
   .hellbox.hot{ color:var(--bronze); transform:scale(1.12); transform-origin:bottom center; }
   .hellbox span{ display:none; } /* the icon says "bin" on its own */
-  .uparrow{ position:absolute; left:50%; top:0; transform:translateX(-50%); font-size:18px; color:var(--lamp); opacity:0; transition:opacity .15s; }
+  .uparrow{ display:none; }
   .uparrow.hot{ opacity:1; }
   .block{ position:absolute; left:50%; bottom:14px; width:64px; height:44px; margin-left:-32px; border-radius:5px;
     display:flex; align-items:center; justify-content:center;
@@ -205,10 +207,10 @@
   .hand{ position:absolute; left:50%; bottom:-4px; margin-left:8px; font-size:38px; pointer-events:none; z-index:30; display:none;
     filter:drop-shadow(0 3px 4px rgba(0,0,0,.25)); }
   .hand.tap{ display:block; animation:handTap 1.3s ease-in-out infinite; }
-  .hand.left{ display:block; animation:handLeft 1.6s ease-in-out infinite; }
+  .hand.right{ display:block; animation:handRight 1.6s ease-in-out infinite; }
   .hand.up{ display:block; animation:handUp 1.6s ease-in-out infinite; }
   @keyframes handTap{ 0%,100%{ transform:translateY(0) scale(1); } 45%{ transform:translateY(6px) scale(.86); } }
-  @keyframes handLeft{ 0%{ transform:translate(0,0); opacity:0; } 15%{ opacity:1; } 70%{ transform:translate(-110px,0); opacity:1; } 100%{ transform:translate(-120px,0); opacity:0; } }
+  @keyframes handRight{ 0%{ transform:translate(0,0); opacity:0; } 15%{ opacity:1; } 70%{ transform:translate(110px,0); opacity:1; } 100%{ transform:translate(120px,0); opacity:0; } }
   @keyframes handUp{ 0%{ transform:translate(0,0); opacity:0; } 15%{ opacity:1; } 70%{ transform:translate(0,-120px); opacity:1; } 100%{ transform:translate(0,-130px); opacity:0; } }
   .press.teach .block.live{ animation:livePulse 1.3s ease-in-out infinite; }
   @keyframes livePulse{ 50%{ box-shadow:0 3px 6px rgba(0,0,0,.18), 0 0 0 3px var(--lamp), 0 0 22px rgba(184,134,58,.7); } }
@@ -235,7 +237,7 @@
     <p class="totals" id="totals"></p>
     <div class="menu">
       <button class="btn primary" id="continueBtn"><span class="ico">&#9654;</span><span id="continueLbl"></span></button>
-      <button class="btn" data-go="daily"><span class="ico">&#9635;</span><span data-t="daily"></span></button>
+      <button class="btn daily-btn" data-go="daily"><span class="ico">&#9635;</span><span><span data-t="daily"></span><small id="dailyHome"></small></span></button>
       <button class="btn" data-go="levels"><span class="ico">&#9638;</span><span data-t="levels"></span></button>
       <button class="btn" data-go="howto"><span class="ico">?</span><span data-t="howto"></span></button>
       <button class="btn feedback" data-go="feedback"><span class="ico">&#9998;</span><span data-t="giveFeedback"></span></button>
@@ -270,7 +272,6 @@
     <div class="press" id="press" role="button" tabindex="0" aria-label="Letter stack">
       <div class="hand" id="hand">&#128070;</div>
       <div class="lamp-glow"></div>
-      <div class="uparrow" id="upArrow">&#8593;</div>
       <div class="hellbox" id="hellbox" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z"/></svg><span data-t="hellbox"></span></div>
       <div class="bed"></div>
       <div id="blocks"></div>
@@ -310,7 +311,8 @@ const T = {
     goal: 'Spell the word from the clue using the letter blocks.',
     testnote: 'Play-test build · thanks for trying it!',
     continueL: n => `Continue · Level ${n}`, allDone: 'All demo levels done · replay any',
-    daily: 'Daily Challenge', levels: 'Levels', howto: 'How to play', giveFeedback: 'Give feedback',
+    daily: 'Daily Challenge', dailyWaiting: "Today's puzzle is waiting · 3 tries", dailyBest: (s, n) => `Best today: ${s} · ${n} ${n === 1 ? 'try' : 'tries'} left`, dailyDoneHome: 'Done for today · come back tomorrow',
+    levels: 'Levels', howto: 'How to play', giveFeedback: 'Give feedback',
     totals: (s, p) => `<b>★ ${s}</b> stars · <b>${p}</b> points`,
     levelsNote: 'A taste of the real game: 30 levels picked from its 3000, from easy 4-letter words to 8-letter ones, with a proverb or idiom now and then (❝).',
     dailyTitle: 'Daily Challenge', dailyBody: 'Five words, the same for everyone today. Best of three tries. (In the app, scores go on a daily leaderboard.)',
@@ -319,12 +321,12 @@ const T = {
     score: 'Score', run: 'Run', slips: 'Slips', slipsLeft: n => `Slips · ${n} left`,
     level: n => `Level ${n}`, wordOf: (i, n) => `Word ${i} / ${n}`, classic: 'Classic', dailyMode: 'Daily Challenge',
     hellbox: 'bin',
-    gesture: '<b>Tap / flick ↓</b> = place · <b>flick ←</b> = throw away · <b>flick ↑</b> = keep for later',
-    gestureDesk: '<b>Space / ↓</b> = place · <b>←</b> = throw away · <b>↑</b> = keep for later · <b>H</b> = hint',
+    gesture: '<b>Tap / flick ↓</b> = place · <b>flick →</b> = throw away',
+    gestureDesk: '<b>Space / ↓</b> = place · <b>→</b> = throw away · <b>H</b> = hint',
     clue: 'Clue', proverb: 'Proverb', idiom: 'Idiom',
     letters: n => `${n} letters`, hintsUsed: n => ` · ${n} hint used`,
     reset: 'Reset', hint: 'Hint', hintAd: '▶ Hint',
-    streak: n => `${n} in a row!`, tipSpecialty: 'Gold blocks with a sparkle are special: use one in the word for +60 points.', gotIt: 'Got it',
+    streak: n => `${n} in a row!`, tipSpecialty: 'Gold blocks with a sparkle are special: use one in the word for +60 points.', tipThrew: "That letter was in the word! Throw away only letters that don't fit; that one will come round again.", gotIt: 'Got it',
     noSpot: 'No open spot', printed: p => `Printed! +${p}`, specialty: 'Specialty sort', hintToast: 'Hint', adHint: 'Hint · no penalty', oneMore: 'One more slip',
     levelComplete: n => `Level ${n} complete`, points: p => `+${p} points`, replayNote: 'Replay: stars can improve, points are only for the first clear.',
     next: 'Next level', home: 'Home', backToLevels: 'Back to levels', allLevels: "You've played every demo level. Thank you!",
@@ -335,12 +337,11 @@ const T = {
     wordsDone: n => `${n} of 5 words printed`, nextTry: 'Next try', seeFeedback: 'Give feedback',
     howtoHtml: `
       <div class="panel"><h3>The goal</h3><p>Read the clue and spell the word. Letters arrive one at a time as metal blocks in a stack. You only ever play the <b>glowing block at the bottom</b>.</p></div>
-      <div class="panel"><h3>Three moves</h3><ul>
+      <div class="panel"><h3>Two moves</h3><ul>
         <li><b>Tap</b> (or flick it down): <b>place</b> the glowing letter. It fills <i>every</i> spot where that letter belongs, in any order.</li>
-        <li><b>Flick it left</b> into the bin: <b>throw it away</b> for good.</li>
-        <li><b>Flick it up</b>: <b>keep it for later</b>. It goes to the back of the stack and comes round again.</li>
+        <li><b>Flick it right</b> into the bin: <b>throw it away</b>. Only throw away letters that aren't in the word; a needed letter will come round again, but you lose time.</li>
         <li>After every move a new letter arrives. There's no timer: think as long as you like.</li>
-        <li>On a computer: Space = place, ← = throw away, ↑ = keep for later, H = hint.</li></ul>
+        <li>On a computer: Space or ↓ = place, → = throw away, H = hint.</li></ul>
         <button class="btn" id="replayTut" style="margin-top:10px">Play the guided level again</button></div>
       <div class="panel"><h3>Slips, stars & hints</h3><ul>
         <li>Placing a letter the word doesn't need costs a <b>slip</b>. You have 3 per level.</li>
@@ -356,14 +357,14 @@ const T = {
       again: 'Would you play it again tomorrow?', againO: ['Yes', 'Maybe', 'No'],
       describe: 'Describe Littera to a friend in one sentence.',
       clarity: 'Were tap / flick-left / flick-up easy to understand?', clarityLo: 'confusing', clarityHi: 'obvious',
-      confused: 'Was anything confusing? (pick any)', confusedO: ['Slips', 'Throw away vs keep for later', 'Hints & ads', 'Stars & points', 'Run multiplier', 'Specialty ✦ blocks', 'Nothing'],
+      confused: 'Was anything confusing? (pick any)', confusedO: ['Slips', 'When to throw away', 'Hints & ads', 'Stars & points', 'Run multiplier', 'Specialty ✦ blocks', 'Nothing'],
       tutorial: 'Did the guided first level make it clear how to play?', tutorialO: ['Yes', 'Mostly', 'No', 'Skipped it'],
       feel: 'How did placing and flicking blocks feel?', feelO: ['Satisfying', 'OK', 'Clumsy'],
       clues: 'The clues were…', cluesO: ['Too vague', 'Just right', 'Too easy'],
       curve: 'Difficulty across the levels:', curveO: ['Too easy', 'Just right', 'Too hard', 'Got harder too fast', 'Got harder too slowly'],
       slips3: '3 slips per level is…', slips3O: ['Too few', 'About right', 'Too many'],
       badClue: 'Any clue that felt unfair, or a word you would remove?',
-      cycleCost: 'Throwing away and keeping for later are free and unlimited. Should they cost something?', cycleCostO: ['Keep them free', 'Limit per level', 'Small point cost'],
+      cycleCost: 'Throwing letters away is free and unlimited. Should it cost something?', cycleCostO: ['Keep them free', 'Limit per level', 'Small point cost'],
       hintFair: 'One free hint per word, then a short ad for each extra. Fair?', hintFairO: ['Fair', 'Rather spend points', 'Rather more free hints', 'Not sure'],
       adsOk: 'Ads between levels (never mid-word) would be…', adsOkO: ['Fine', 'Only if rare', 'Would make me stop', 'I would pay to remove them'],
       modes: 'Which of these would you want? (pick any)',
@@ -382,7 +383,8 @@ const T = {
     goal: 'İpucundaki kelimeyi harf bloklarıyla yaz.',
     testnote: 'Deneme sürümü · denediğin için teşekkürler!',
     continueL: n => `Devam et · ${n}. seviye`, allDone: 'Tüm deneme seviyeleri bitti · istediğini tekrar oyna',
-    daily: 'Günlük Bulmaca', levels: 'Seviyeler', howto: 'Nasıl oynanır', giveFeedback: 'Görüş bildir',
+    daily: 'Günlük Bulmaca', dailyWaiting: 'Bugünün bulmacası seni bekliyor · 3 hak', dailyBest: (s, n) => `Bugünkü en iyi: ${s} · ${n} hak kaldı`, dailyDoneHome: 'Bugünlük bitti · yarın tekrar gel',
+    levels: 'Seviyeler', howto: 'Nasıl oynanır', giveFeedback: 'Görüş bildir',
     totals: (s, p) => `<b>★ ${s}</b> yıldız · <b>${p}</b> puan`,
     levelsNote: 'Asıl oyundan bir tadımlık: 3000 seviyeden seçilmiş 30 seviye; kolay 4 harfli kelimelerden 8-9 harflilere, arada atasözü ve deyimlerle (❝).',
     dailyTitle: 'Günlük Bulmaca', dailyBody: 'Beş kelime, bugün herkes için aynı. Üç denemenin en iyisi sayılır. (Uygulamada puanlar günlük sıralamaya girer.)',
@@ -391,12 +393,12 @@ const T = {
     score: 'Puan', run: 'Seri', slips: 'Hata', slipsLeft: n => `Hata · ${n} hak`,
     level: n => `${n}. seviye`, wordOf: (i, n) => `Kelime ${i} / ${n}`, classic: 'Klasik', dailyMode: 'Günlük Bulmaca',
     hellbox: 'çöp',
-    gesture: '<b>Dokun / aşağı fırlat</b> = yerleştir · <b>sola fırlat</b> = at · <b>yukarı fırlat</b> = sonraya sakla',
-    gestureDesk: '<b>Boşluk / ↓</b> = yerleştir · <b>←</b> = at · <b>↑</b> = sonraya sakla · <b>H</b> = ipucu',
+    gesture: '<b>Dokun / aşağı fırlat</b> = yerleştir · <b>sağa fırlat</b> = at',
+    gestureDesk: '<b>Boşluk / ↓</b> = yerleştir · <b>→</b> = at · <b>H</b> = ipucu',
     clue: 'İpucu', proverb: 'Atasözü', idiom: 'Deyim',
     letters: n => `${n} harf`, hintsUsed: n => ` · ${n} ipucu kullanıldı`,
     reset: 'Sıfırla', hint: 'İpucu', hintAd: '▶ İpucu',
-    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıltılı altın harfler özeldir: kelimede kullanırsan +60 puan.', gotIt: 'Anladım',
+    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıltılı altın harfler özeldir: kelimede kullanırsan +60 puan.', tipThrew: 'O harf kelimede vardı! Yalnızca uymayan harfleri at; o harf yeniden gelecek.', gotIt: 'Anladım',
     noSpot: 'Boş yer yok', printed: p => `Basıldı! +${p}`, specialty: 'Özel harf', hintToast: 'İpucu', adHint: 'İpucu · puan kaybı yok', oneMore: 'Bir hak daha',
     levelComplete: n => `${n}. seviye tamam`, points: p => `+${p} puan`, replayNote: 'Tekrar: yıldızlar artabilir, puan yalnızca ilk geçişte verilir.',
     next: 'Sonraki seviye', home: 'Ana sayfa', backToLevels: 'Seviyelere dön', allLevels: 'Tüm deneme seviyelerini oynadın. Teşekkürler!',
@@ -407,12 +409,11 @@ const T = {
     wordsDone: n => `5 kelimeden ${n} tanesi basıldı`, nextTry: 'Sonraki deneme', seeFeedback: 'Görüş bildir',
     howtoHtml: `
       <div class="panel"><h3>Amaç</h3><p>İpucunu oku ve kelimeyi yaz. Harfler bir yığının içinde metal bloklar olarak tek tek gelir. Her zaman yalnızca <b>en alttaki parlayan harfi</b> oynarsın.</p></div>
-      <div class="panel"><h3>Üç hamle</h3><ul>
+      <div class="panel"><h3>İki hamle</h3><ul>
         <li><b>Dokun</b> (ya da aşağı fırlat): parlayan harfi <b>yerleştir</b>. O harfin geçtiği <i>tüm</i> yerleri, sırası fark etmeden doldurur.</li>
-        <li><b>Sola fırlat</b>: harfi çöpe <b>at</b>, bir daha gelmez.</li>
-        <li><b>Yukarı fırlat</b>: <b>sonraya sakla</b>. Yığının arkasına gider ve sırası gelince yeniden çıkar.</li>
+        <li><b>Sağa fırlat</b>: harfi çöpe <b>at</b>. Yalnızca kelimede olmayan harfleri at; gereken bir harf yeniden gelir ama zaman kaybedersin.</li>
         <li>Her hamleden sonra yeni bir harf gelir. Süre yok, istediğin kadar düşün.</li>
-        <li>Bilgisayarda: Boşluk = yerleştir, ← = at, ↑ = sonraya sakla, H = ipucu.</li></ul>
+        <li>Bilgisayarda: Boşluk ya da ↓ = yerleştir, → = at, H = ipucu.</li></ul>
         <button class="btn" id="replayTut" style="margin-top:10px">Rehberli seviyeyi tekrar oyna</button></div>
       <div class="panel"><h3>Hata hakkı, yıldız ve ipucu</h3><ul>
         <li>Kelimede olmayan bir harfi yerleştirirsen bir <b>hata hakkı</b> gider. Her seviyede 3 hakkın var.</li>
@@ -428,14 +429,14 @@ const T = {
       again: 'Yarın tekrar oynar mısın?', againO: ['Evet', 'Belki', 'Hayır'],
       describe: "Littera'yı bir arkadaşına tek cümleyle anlat.",
       clarity: 'Dokun / sola fırlat / yukarı fırlat kolay anlaşıldı mı?', clarityLo: 'kafa karıştırıcı', clarityHi: 'çok net',
-      confused: 'Kafa karıştıran bir şey oldu mu? (birden fazla seçebilirsin)', confusedO: ['Hata hakkı', 'At / sonraya sakla farkı', 'İpucu ve reklam', 'Yıldız ve puan', 'Seri çarpanı', 'Özel ✦ harfler', 'Hiçbiri'],
+      confused: 'Kafa karıştıran bir şey oldu mu? (birden fazla seçebilirsin)', confusedO: ['Hata hakkı', 'Ne zaman atmalı', 'İpucu ve reklam', 'Yıldız ve puan', 'Seri çarpanı', 'Özel ✦ harfler', 'Hiçbiri'],
       tutorial: 'Rehberli ilk seviye nasıl oynanacağını anlattı mı?', tutorialO: ['Evet', 'Çoğunlukla', 'Hayır', 'Atladım'],
       feel: 'Harfleri yerleştirmek ve fırlatmak nasıl hissettirdi?', feelO: ['Tatmin edici', 'İdare eder', 'Hantal'],
       clues: 'İpuçları…', cluesO: ['Çok belirsizdi', 'Tam kıvamındaydı', 'Çok kolaydı'],
       curve: 'Seviyeler boyunca zorluk:', curveO: ['Çok kolay', 'Tam kıvamında', 'Çok zor', 'Çok hızlı zorlaştı', 'Çok yavaş zorlaştı'],
       slips3: 'Seviye başına 3 hata hakkı…', slips3O: ['Az', 'Yeterli', 'Fazla'],
       badClue: 'Haksız bulduğun bir ipucu ya da çıkarılmasını istediğin bir kelime var mı?',
-      cycleCost: 'Atmak ve sonraya saklamak ücretsiz ve sınırsız. Bir bedeli olmalı mı?', cycleCostO: ['Ücretsiz kalsın', 'Seviye başına sınırlı olsun', 'Biraz puana mal olsun'],
+      cycleCost: 'Harf atmak ücretsiz ve sınırsız. Bir bedeli olmalı mı?', cycleCostO: ['Ücretsiz kalsın', 'Seviye başına sınırlı olsun', 'Biraz puana mal olsun'],
       hintFair: 'Kelime başına 1 ücretsiz ipucu, fazlası için kısa reklam. Adil mi?', hintFairO: ['Adil', 'Puanla almayı tercih ederim', 'Daha çok ücretsiz ipucu olsun', 'Emin değilim'],
       adsOk: 'Seviyeler arasında reklam (kelime ortasında asla) olursa…', adsOkO: ['Sorun değil', 'Seyrekse olur', 'Oynamayı bırakırım', 'Kaldırmak için para öderim'],
       modes: 'Hangilerini isterdin? (birden fazla seçebilirsin)',
@@ -453,20 +454,18 @@ const T = {
 
 // ---------------------------------------------------------------- guided first level
 // Level 1 is scripted the first time: a fixed stack where each move is needed
-// exactly once (place, throw away, keep for later), then the player finishes.
+// exactly once (place, throw away), then the player finishes.
 const TUTORIAL = {
-  en: { w: 'SONG', c: 'a short piece of music with words', seed: 'SXGON', casts: 'ERA', steps: [
+  en: { w: 'SONG', c: 'a short piece of music with words', seed: 'SXGON', casts: 'ER', steps: [
     { say: "Here's the clue below. You're spelling a <b>4-letter word</b>. Letters arrive in this stack, and you always play the <b>glowing block at the bottom</b>.", next: 'Got it' },
     { say: '<b>S</b> is in the word. <b>Tap</b> the stack (or flick the letter <b>down</b>) to place it.', act: 'set', hand: 'tap' },
-    { say: "<b>X</b> isn't in the word. <b>Flick it left</b> into the bin to throw it away.", act: 'scrap', hand: 'left' },
-    { say: 'Not sure about <b>G</b> yet? <b>Flick it up</b> to keep it for later. It goes to the back of the stack and comes round again.', act: 'cycle', hand: 'up' },
+    { say: "<b>X</b> isn't in the word. <b>Flick it right</b> into the bin to throw it away.", act: 'scrap', hand: 'right' },
     { say: "Now finish the word yourself: place letters that fit, throw away the rest. A letter that doesn't fit costs one of your <b>3 slips</b>. Stuck? Tap <b>Hint</b>.", next: "Let's go" },
   ] },
-  tr: { w: 'GEMİ', c: 'Su üstünde yüzen, insan ve yük taşımaya yarayan büyük taşıt', seed: 'GZMEİ', casts: 'ARK', steps: [
+  tr: { w: 'GEMİ', c: 'Su üstünde yüzen, insan ve yük taşımaya yarayan büyük taşıt', seed: 'GZMEİ', casts: 'AR', steps: [
     { say: 'İpucu aşağıda. <b>4 harfli</b> bir kelime yazıyorsun. Harfler bu yığında gelir ve her zaman <b>en alttaki parlayan harfi</b> oynarsın.', next: 'Anladım' },
     { say: '<b>G</b> kelimede var. Yerleştirmek için yığına <b>dokun</b> ya da harfi <b>aşağı fırlat</b>.', act: 'set', hand: 'tap' },
-    { say: '<b>Z</b> kelimede yok. Atmak için onu <b>sola, çöpe fırlat</b>.', act: 'scrap', hand: 'left' },
-    { say: "<b>M</b>'den henüz emin değil misin? Sonraya saklamak için <b>yukarı fırlat</b>. Yığının arkasına gider, sırası gelince yeniden çıkar.", act: 'cycle', hand: 'up' },
+    { say: '<b>Z</b> kelimede yok. Atmak için onu <b>sağa, çöpe fırlat</b>.', act: 'scrap', hand: 'right' },
     { say: 'Şimdi kelimeyi sen bitir: uyan harfleri yerleştir, gerisini at. Uymayan bir harf <b>3 hata hakkından</b> birini götürür. Takılırsan <b>İpucu</b>’na dokun.', next: 'Başla' },
   ] },
 };
@@ -621,17 +620,9 @@ function doSet() {
   else if (live.sp) toast(t().specialty, 'sp');
   render(idxs);
 }
-function doCycle() {
-  if (!canAct() || !G.galley.length) return;
-  if (!tutAllows('cycle')) return render();
-  tutDone('cycle');
-  const live = G.galley.shift(); G.galley.push(live);
-  stats.cycles++;
-  play('crank'); if (cast()) play('clack', 230); buzz(8);
-  render();
-}
 function doScrap() {
   if (!canAct() || !G.galley.length) return;
+  if (needs().includes(G.galley[0].l) && !tutStep()) pendingTip = 'threw';
   if (!tutAllows('scrap')) return render();
   tutDone('scrap');
   const live = G.galley.shift();
@@ -819,9 +810,9 @@ function leave(id, how) {
   const el = blockEls.get(id); if (!el) return;
   blockEls.delete(id);
   el.classList.remove('live', 'drag');
-  const x = how === 'scrap' ? -120 : how === 'set' ? 0 : 0, y = how === 'set' ? 120 : how === 'scrap' ? 20 : 30;
+  const x = how === 'scrap' ? 120 : 0, y = how === 'set' ? 120 : how === 'scrap' ? 20 : 30;
   el.style.transition = 'transform .28s ease, opacity .28s ease';
-  el.style.transform = how === 'miss' ? 'translateY(30px) rotate(8deg) scale(.8)' : `translate(${x + (el._dx || 0)}px, ${y}px) scale(.7)` + (how === 'scrap' ? ' rotate(-30deg)' : '');
+  el.style.transform = how === 'miss' ? 'translateY(30px) rotate(8deg) scale(.8)' : `translate(${x + (el._dx || 0)}px, ${y}px) scale(.7)` + (how === 'scrap' ? ' rotate(30deg)' : '');
   el.style.opacity = '0';
   setTimeout(() => el.remove(), 320);
 }
@@ -835,7 +826,8 @@ function render(stamped = []) {
   $('scoreVal').textContent = G.mode === 'classic' ? progress().score : G.score;
   $('runMult').textContent = '×' + (1 + G.run * .08).toFixed(2);
   $('runFill').style.width = (G.run / MAX_RUN * 100) + '%';
-  $('slipLbl').textContent = t().slipsLeft(G.ink);
+  $('slipLbl').textContent = '';
+  $('slips').setAttribute('aria-label', t().slipsLeft(G.ink));
   $('slips').innerHTML = [0, 1, 2].map(i => `<span class="slip ${i < G.ink ? '' : 'gone'}"></span>`).join('');
   $('levelLbl').textContent = G.mode === 'classic' ? t().level(G.level) : t().wordOf(G.idx + 1, G.entries.length);
   $('modeLbl').textContent = G.mode === 'classic' ? t().classic : t().dailyMode;
@@ -856,10 +848,11 @@ function render(stamped = []) {
     if (!el.classList.contains('drag')) el.style.transform = `translateY(${-i * STEP}px)`;
   });
   // clue + stick
-  $('clueLbl').textContent = G.kind === 'proverb' ? t().proverb : G.kind === 'idiom' ? t().idiom : t().clue;
+  $('clueLbl').textContent = G.kind === 'proverb' ? t().proverb : G.kind === 'idiom' ? t().idiom : '';
+  $('clueLbl').style.display = G.kind === 'word' ? 'none' : '';
   $('clueTxt').textContent = G.clue;
   const letters = G.target.replace(/ /g, '').length;
-  $('trayMeta').textContent = t().letters(letters) + (G.hintsUsed ? t().hintsUsed(G.hintsUsed) : '');
+  $('trayMeta').textContent = '';
   const small = letters > 9 || G.target.length > 12;
   const last = G.fillOrder.length ? G.fillOrder[G.fillOrder.length - 1] : [];
   let html = '', i = 0;
@@ -880,27 +873,30 @@ function render(stamped = []) {
   // buttons
   $('resetBtn').disabled = !canAct() || !G.fillOrder.length;
   const hb = $('hintBtn');
-  hb.textContent = hintIsFree() ? t().hint : t().hintAd;
+  hb.textContent = (hintIsFree() ? t().hint : t().hintAd) + (G.hintsUsed ? ' · ' + G.hintsUsed : '');
   hb.disabled = !canAct() || complete() || !!tutStep();
   if (tutStep()) $('resetBtn').disabled = true;
   const touch = matchMedia('(pointer: coarse)').matches;
-  $('gestureHint').innerHTML = touch ? t().gesture : t().gestureDesk;
+  // Less text: the line is only for players who skipped the guided level.
+  $('gestureHint').innerHTML = store.get('tutorialDone', false) ? '' : (touch ? t().gesture : t().gestureDesk);
   renderCoach();
 }
-// The first time a gold (specialty) block shows up, say what it's for.
-let tipOpen = false;
-function maybeSpecialtyTip() {
-  if (tipOpen || tutStep() || store.get('tip.specialty', false) || !G.galley.some(b => b.sp)) return false;
-  store.set('tip.specialty', true);
-  tipOpen = true;
-  return true;
+// One-time tips: what gold (specialty) blocks are for, and what throwing away
+// a needed letter means.
+let tipOpen = null, pendingTip = null;
+function maybeTip() {
+  if (tipOpen || tutStep()) return !!tipOpen;
+  if (pendingTip === 'threw' && !store.get('tip.threw', false)) { store.set('tip.threw', true); tipOpen = t().tipThrew; }
+  else if (G.galley.some(b => b.sp) && !store.get('tip.specialty', false)) { store.set('tip.specialty', true); tipOpen = t().tipSpecialty; }
+  pendingTip = null;
+  return !!tipOpen;
 }
 function renderCoach() {
   const st = tutStep(), coach = $('coach'), hand = $('hand');
-  if (!st && (tipOpen || maybeSpecialtyTip())) {
+  if (!st && maybeTip()) {
     coach.classList.add('on'); hand.className = 'hand'; press.classList.remove('teach');
     $('gestureHint').style.display = 'none';
-    coach.innerHTML = `${t().tipSpecialty}<div class="row"><span></span><button id="tipOk">${t().gotIt}</button></div>`;
+    coach.innerHTML = `${tipOpen}<div class="row"><span></span><button id="tipOk">${t().gotIt}</button></div>`;
     return;
   }
   coach.classList.toggle('on', !!st);
@@ -910,11 +906,11 @@ function renderCoach() {
   if (!st) return;
   const n = TUTORIAL[lang].steps.length;
   coach.innerHTML = `${st.say}<div class="row"><span class="step">${G.tut.i + 1} / ${n}</span>${st.next ? `<button id="coachNext">${st.next}</button>` : ''}</div>`;
-  if (st.hand === 'up' || st.hand === 'left') hand.style.bottom = '0px';
+  if (st.hand === 'right') hand.style.bottom = '0px';
 }
 document.addEventListener('click', e => {
   if (e.target.id === 'coachNext') tutNext();
-  if (e.target.id === 'tipOk') { tipOpen = false; render(); }
+  if (e.target.id === 'tipOk') { tipOpen = null; render(); }
 });
 stickEl.addEventListener('click', e => { if (e.target.closest('.chip.undo')) doUndo(); });
 $('resetBtn').onclick = doReset;
@@ -938,26 +934,24 @@ press.addEventListener('pointermove', e => {
   if (!drag) return;
   drag.dx = e.clientX - drag.x; drag.dy = e.clientY - drag.y;
   const horiz = Math.abs(drag.dx) > Math.abs(drag.dy);
-  // Free toward left and up; down (place) and right only nudge the block.
-  const vx = Math.min(10, drag.dx), vy = drag.dy > 0 ? Math.min(14, drag.dy * .25) : drag.dy;
+  // Free toward the bin (right); down (place) nudges; left and up barely move.
+  const vx = drag.dx < 0 ? Math.max(-10, drag.dx * .25) : drag.dx, vy = drag.dy > 0 ? Math.min(14, drag.dy * .25) : Math.max(-10, drag.dy * .25);
   const dx = horiz ? vx : vx * .25, dy = horiz ? vy * .25 : vy;
   drag.el._dx = dx;
   drag.el.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx / 8}deg)`;
   const past = Math.hypot(drag.dx, drag.dy) > 56;
-  $('hellbox').classList.toggle('hot', horiz && drag.dx < -30);
-  $('upArrow').classList.toggle('hot', !horiz && drag.dy < -30);
+  $('hellbox').classList.toggle('hot', horiz && drag.dx > 30);
   if (past && !drag.ticked) { drag.ticked = true; buzz(6); }
 });
 function endDrag(e, cancelled) {
   if (!drag) return;
   const d = drag; drag = null;
-  $('hellbox').classList.remove('hot'); $('upArrow').classList.remove('hot');
+  $('hellbox').classList.remove('hot');
   const dist = Math.hypot(d.dx, d.dy), dt = performance.now() - d.t;
   const horiz = Math.abs(d.dx) > Math.abs(d.dy);
   const commit = dist > 56 || (dist > 20 && dt < 180);
   d.el.classList.remove('drag');
-  if (!cancelled && commit && horiz && d.dx < 0) return doScrap();
-  if (!cancelled && commit && !horiz && d.dy < 0) return doCycle();
+  if (!cancelled && commit && horiz && d.dx > 0) return doScrap();
   if (!cancelled && (dist > 40 || (dist > 20 && dt < 180)) && !horiz && d.dy > 0) return doSet();
   d.el._dx = 0;
   if (!cancelled && dist < 10) return doSet();
@@ -969,8 +963,7 @@ document.addEventListener('keydown', e => {
   if (!$('game').classList.contains('on') || overlay.classList.contains('on')) return;
   touchActive();
   if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowDown') { e.preventDefault(); unlockAudio(); doSet(); }
-  else if (e.key === 'ArrowLeft') { e.preventDefault(); doScrap(); }
-  else if (e.key === 'ArrowUp') { e.preventDefault(); doCycle(); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); doScrap(); }
   else if (e.key.toLowerCase() === 'h') $('hintBtn').click();
 });
 // Browsers only allow sound after the first tap or key press; nothing to do
@@ -1002,6 +995,10 @@ document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(b.dat
 $('continueBtn').onclick = () => { unlockAudio(); const p = progress(); startLevel(Math.min(p.level, LEVELS())); };
 
 function renderHome() {
+  const d = dailyState(), left = 3 - d.tries;
+  const homeDaily = document.querySelector('.daily-btn');
+  homeDaily.classList.toggle('waiting', d.tries === 0);
+  $('dailyHome').textContent = d.tries === 0 ? t().dailyWaiting : left > 0 ? t().dailyBest(d.best, left) : t().dailyDoneHome;
   const p = progress();
   const stars = Object.values(p.stars).reduce((a, b) => a + b, 0);
   $('totals').innerHTML = t().totals(stars, p.score);
@@ -1100,7 +1097,7 @@ function summaryText() {
   if (answers.name) lines.push('', `— ${answers.name}`);
   const pe = store.get('progress.en', null), pt = store.get('progress.tr', null);
   const lv = p => p ? `L${Math.min(p.level, LEVELS())}${p.level > LEVELS() ? '✓' : ''}` : '–';
-  lines.push('', `[stats] EN ${lv(pe)} · TR ${lv(pt)} · cleared ${stats.levelsCleared} · failed ${stats.fails} · misses ${stats.misses}/${stats.sets} sets · cycles ${stats.cycles} · scraps ${stats.scraps} · hints ${stats.freeHints} free + ${stats.adHints} ad · extra slips ${stats.adSlips} · undo ${stats.undos} · reset ${stats.resets} · daily tries ${stats.dailyTries} · ${Math.round(stats.playSeconds / 60)} min · ${matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse'}`);
+  lines.push('', `[stats] EN ${lv(pe)} · TR ${lv(pt)} · cleared ${stats.levelsCleared} · failed ${stats.fails} · misses ${stats.misses}/${stats.sets} sets · scraps ${stats.scraps} · hints ${stats.freeHints} free + ${stats.adHints} ad · extra slips ${stats.adSlips} · undo ${stats.undos} · reset ${stats.resets} · daily tries ${stats.dailyTries} · ${Math.round(stats.playSeconds / 60)} min · ${matchMedia('(pointer: coarse)').matches ? 'touch' : 'mouse'}`);
   return lines.join('\n');
 }
 function buildSummary() {
