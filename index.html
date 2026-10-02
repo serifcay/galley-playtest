@@ -307,8 +307,8 @@ const SFX = {"clack":["data:audio/mp4;base64,AAAAHGZ0eXBNNEEgAAAAAE00QSBtcDQyaXN
 // ---------------------------------------------------------------- text
 const T = {
   en: {
-    tagline: 'Set the line, one block at a time.',
-    goal: 'Spell the word from the clue using the letter blocks.',
+    tagline: 'Find the word, one letter at a time.',
+    goal: 'Spell the word from the clue, one letter at a time.',
     testnote: 'Play-test build · thanks for trying it!',
     continueL: n => `Continue · Level ${n}`, allDone: 'All demo levels done · replay any',
     daily: 'Daily Challenge', dailyWaiting: "Today's puzzle is waiting · 3 tries", dailyBest: (s, n) => `Best today: ${s} · ${n} ${n === 1 ? 'try' : 'tries'} left`, dailyDoneHome: 'Done for today · come back tomorrow',
@@ -326,17 +326,17 @@ const T = {
     clue: 'Clue', proverb: 'Proverb', idiom: 'Idiom',
     letters: n => `${n} letters`, hintsUsed: n => ` · ${n} hint used`,
     reset: 'Reset', hint: 'Hint', hintAd: '▶ Hint',
-    streak: n => `${n} in a row!`, tipSpecialty: 'Gold blocks with a sparkle are special: use one in the word for +60 points.', gotIt: 'Got it',
-    noSpot: 'No open spot', printed: p => `Printed! +${p}`, specialty: 'Specialty sort', hintToast: 'Hint', adHint: 'Hint · no penalty', oneMore: 'One more slip',
+    streak: n => `${n} in a row!`, tipSpecialty: 'Gold letters with a sparkle are special: use one in the word for +60 points.', gotIt: 'Got it',
+    noSpot: 'Not in the word', printed: p => `Solved! +${p}`, specialty: 'Bonus letter', hintToast: 'Hint', adHint: 'Hint · no penalty', oneMore: 'One more slip',
     levelComplete: n => `Level ${n} complete`, points: p => `+${p} points`, replayNote: 'Replay: stars can improve, points are only for the first clear.',
     next: 'Next level', home: 'Home', backToLevels: 'Back to levels', allLevels: "You've played every demo level. Thank you!",
     failed: n => `Level ${n} failed`, outOf: 'Out of slips', answerWas: 'The answer was',
     tryAgain: 'Try again (new word)', oneMoreTry: '▶ One more try (watch an ad)',
     adTitle: 'Ad', adBody: 'In the real app a short video ad plays here.', adSkip: 'Close',
     dailyDone: 'Challenge complete', dailyOut: 'Out of slips', dailyScore: s => `${s} points`,
-    wordsDone: n => `${n} of 5 words printed`, nextTry: 'Next try', seeFeedback: 'Give feedback',
+    wordsDone: n => `${n} of 5 words solved`, nextTry: 'Next try', seeFeedback: 'Give feedback',
     howtoHtml: `
-      <div class="panel"><h3>The goal</h3><p>Read the clue and spell the word. Letters arrive one at a time as metal blocks in a stack. You only ever play the <b>glowing block at the bottom</b>.</p></div>
+      <div class="panel"><h3>The goal</h3><p>Read the clue and spell the word. Letters arrive one at a time in a stack. You only ever play the <b>glowing letter at the bottom</b>.</p></div>
       <div class="panel"><h3>Two moves</h3><ul>
         <li><b>Tap</b> (or flick it down): <b>place</b> the glowing letter. It fills <i>every</i> spot where that letter belongs, in any order.</li>
         <li><b>Flick it right</b> into the bin: <b>throw it away</b>. Only throw away letters that aren't in the word; a needed letter will come round again, but you lose time.</li>
@@ -349,7 +349,7 @@ const T = {
         <li><b>1 free hint</b> per word (costs some points). More hints come from a short ad (simulated here).</li>
         <li>Out of slips? Try again with a new word, or watch an ad for one more slip.</li>
         <li><b>Run</b>: finishing words without a miss grows a score multiplier. A miss resets it.</li>
-        <li>Gold ✦ blocks are specialty sorts: +60 points if you use one.</li></ul></div>`,
+        <li>Gold ✦ letters are bonus letters: +60 points if you use one.</li></ul></div>`,
     fb: {
       intro: 'Thanks for playing! These questions take about 3 minutes. Skip anything you like. At the end, copy or share your answers and send them back.',
       s1: 'First impressions', s2: 'Controls', s3: 'Difficulty & clues', s4: 'Ideas', s5: 'Anything else',
@@ -357,9 +357,9 @@ const T = {
       again: 'Would you play it again tomorrow?', againO: ['Yes', 'Maybe', 'No'],
       describe: 'Describe Littera to a friend in one sentence.',
       clarity: 'Were tap / flick-left / flick-up easy to understand?', clarityLo: 'confusing', clarityHi: 'obvious',
-      confused: 'Was anything confusing? (pick any)', confusedO: ['Slips', 'When to throw away', 'Hints & ads', 'Stars & points', 'Run multiplier', 'Specialty ✦ blocks', 'Nothing'],
+      confused: 'Was anything confusing? (pick any)', confusedO: ['Slips', 'When to throw away', 'Hints & ads', 'Stars & points', 'Run multiplier', 'Gold ✦ bonus letters', 'Nothing'],
       tutorial: 'Did the guided first level make it clear how to play?', tutorialO: ['Yes', 'Mostly', 'No', 'Skipped it'],
-      feel: 'How did placing and flicking blocks feel?', feelO: ['Satisfying', 'OK', 'Clumsy'],
+      feel: 'How did placing and flicking letters feel?', feelO: ['Satisfying', 'OK', 'Clumsy'],
       clues: 'The clues were…', cluesO: ['Too vague', 'Just right', 'Too easy'],
       curve: 'Difficulty across the levels:', curveO: ['Too easy', 'Just right', 'Too hard', 'Got harder too fast', 'Got harder too slowly'],
       slips3: '3 slips per level is…', slips3O: ['Too few', 'About right', 'Too many'],
@@ -368,7 +368,7 @@ const T = {
       hintFair: 'One free hint per word, then a short ad for each extra. Fair?', hintFairO: ['Fair', 'Rather spend points', 'Rather more free hints', 'Not sure'],
       adsOk: 'Ads between levels (never mid-word) would be…', adsOkO: ['Fine', 'Only if rare', 'Would make me stop', 'I would pay to remove them'],
       modes: 'Which of these would you want? (pick any)',
-      modesO: ['Stop the Press: bank a bonus or risk it for more', 'Twin Press: two stacks at once', 'Loose Type: no slip limit, just relax', 'Themed chapters (animals, food, …)', 'Play or compete with friends', 'A timed mode'],
+      modesO: ['Push your luck: bank a bonus or risk it for more', 'Two words at once, side by side', 'Relaxed mode: no slip limit', 'Themed chapters (animals, food, …)', 'Play or compete with friends', 'A timed mode'],
       daily: 'Did you try the Daily Challenge? Would you come back for it?', dailyO: ['Yes, daily', 'Sometimes', 'No', "Didn't try it"],
       idea: 'Your best idea to make Littera better:',
       other: 'Anything else? Bugs, likes, dislikes…',
@@ -379,8 +379,8 @@ const T = {
     },
   },
   tr: {
-    tagline: 'Satırı diz, her seferinde bir harf.',
-    goal: 'İpucundaki kelimeyi harf bloklarıyla yaz.',
+    tagline: 'Kelimeyi harf harf bul.',
+    goal: 'İpucundaki kelimeyi harf harf bul.',
     testnote: 'Deneme sürümü · denediğin için teşekkürler!',
     continueL: n => `Devam et · ${n}. seviye`, allDone: 'Tüm deneme seviyeleri bitti · istediğini tekrar oyna',
     daily: 'Günlük Bulmaca', dailyWaiting: 'Bugünün bulmacası seni bekliyor · 3 hak', dailyBest: (s, n) => `Bugünkü en iyi: ${s} · ${n} hak kaldı`, dailyDoneHome: 'Bugünlük bitti · yarın tekrar gel',
@@ -398,17 +398,17 @@ const T = {
     clue: 'İpucu', proverb: 'Atasözü', idiom: 'Deyim',
     letters: n => `${n} harf`, hintsUsed: n => ` · ${n} ipucu kullanıldı`,
     reset: 'Sıfırla', hint: 'İpucu', hintAd: '▶ İpucu',
-    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıltılı altın harfler özeldir: kelimede kullanırsan +60 puan.', gotIt: 'Anladım',
-    noSpot: 'Boş yer yok', printed: p => `Basıldı! +${p}`, specialty: 'Özel harf', hintToast: 'İpucu', adHint: 'İpucu · puan kaybı yok', oneMore: 'Bir hak daha',
+    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıldayan altın harfler özeldir: kelimede kullanırsan +60 puan.', gotIt: 'Anladım',
+    noSpot: 'Bu harf yok', printed: p => `Bildin! +${p}`, specialty: 'Bonus harf', hintToast: 'İpucu', adHint: 'İpucu · puan kaybı yok', oneMore: 'Bir hak daha',
     levelComplete: n => `${n}. seviye tamam`, points: p => `+${p} puan`, replayNote: 'Tekrar: yıldızlar artabilir, puan yalnızca ilk geçişte verilir.',
     next: 'Sonraki seviye', home: 'Ana sayfa', backToLevels: 'Seviyelere dön', allLevels: 'Tüm deneme seviyelerini oynadın. Teşekkürler!',
     failed: n => `${n}. seviye olmadı`, outOf: 'Hata hakkın bitti', answerWas: 'Cevap şuydu',
     tryAgain: 'Tekrar dene (yeni kelime)', oneMoreTry: '▶ 1 hak daha almak için reklam izle',
     adTitle: 'Reklam', adBody: 'Gerçek uygulamada burada kısa bir video reklam oynar.', adSkip: 'Kapat',
     dailyDone: 'Bulmaca tamamlandı', dailyOut: 'Hata hakkın bitti', dailyScore: s => `${s} puan`,
-    wordsDone: n => `5 kelimeden ${n} tanesi basıldı`, nextTry: 'Sonraki deneme', seeFeedback: 'Görüş bildir',
+    wordsDone: n => `5 kelimeden ${n} tanesini bildin`, nextTry: 'Sonraki deneme', seeFeedback: 'Görüş bildir',
     howtoHtml: `
-      <div class="panel"><h3>Amaç</h3><p>İpucunu oku ve kelimeyi yaz. Harfler bir yığının içinde metal bloklar olarak tek tek gelir. Her zaman yalnızca <b>en alttaki parlayan harfi</b> oynarsın.</p></div>
+      <div class="panel"><h3>Amaç</h3><p>İpucunu oku ve kelimeyi yaz. Harfler bir sütunda sırayla, tek tek gelir. Her seferinde <b>en alttaki parlayan harfle</b> oynarsın.</p></div>
       <div class="panel"><h3>İki hamle</h3><ul>
         <li><b>Dokun</b> (ya da aşağı fırlat): parlayan harfi <b>yerleştir</b>. O harfin geçtiği <i>tüm</i> yerleri, sırası fark etmeden doldurur.</li>
         <li><b>Sağa fırlat</b>: harfi çöpe <b>at</b>. Yalnızca kelimede olmayan harfleri at; gereken bir harf yeniden gelir ama zaman kaybedersin.</li>
@@ -421,7 +421,7 @@ const T = {
         <li>Her kelimede <b>1 ücretsiz ipucu</b> (biraz puana mal olur). Fazlası kısa bir reklamla gelir (burada taklit).</li>
         <li>Hakkın mı bitti? Yeni kelimeyle tekrar dene ya da reklam izleyip bir hak daha al.</li>
         <li><b>Seri</b>: hatasız biten her kelime puan çarpanını büyütür. Bir hata sıfırlar.</li>
-        <li>Altın ✦ harfler özeldir: kullanırsan +60 puan.</li></ul></div>`,
+        <li>Altın ✦ harfler bonus harftir: kullanırsan +60 puan.</li></ul></div>`,
     fb: {
       intro: 'Oynadığın için teşekkürler! Sorular yaklaşık 3 dakika sürer, istediğini atlayabilirsin. Sonunda cevaplarını kopyala ya da paylaş ve bana geri gönder.',
       s1: 'İlk izlenim', s2: 'Kontroller', s3: 'Zorluk ve ipuçları', s4: 'Fikirler', s5: 'Başka bir şey',
@@ -429,7 +429,7 @@ const T = {
       again: 'Yarın tekrar oynar mısın?', againO: ['Evet', 'Belki', 'Hayır'],
       describe: "Littera'yı bir arkadaşına tek cümleyle anlat.",
       clarity: 'Dokun / sola fırlat / yukarı fırlat kolay anlaşıldı mı?', clarityLo: 'kafa karıştırıcı', clarityHi: 'çok net',
-      confused: 'Kafa karıştıran bir şey oldu mu? (birden fazla seçebilirsin)', confusedO: ['Hata hakkı', 'Ne zaman atmalı', 'İpucu ve reklam', 'Yıldız ve puan', 'Seri çarpanı', 'Özel ✦ harfler', 'Hiçbiri'],
+      confused: 'Kafa karıştıran bir şey oldu mu? (birden fazla seçebilirsin)', confusedO: ['Hata hakkı', 'Ne zaman atmalı', 'İpucu ve reklam', 'Yıldız ve puan', 'Seri çarpanı', 'Altın ✦ bonus harfler', 'Hiçbiri'],
       tutorial: 'Rehberli ilk seviye nasıl oynanacağını anlattı mı?', tutorialO: ['Evet', 'Çoğunlukla', 'Hayır', 'Atladım'],
       feel: 'Harfleri yerleştirmek ve fırlatmak nasıl hissettirdi?', feelO: ['Tatmin edici', 'İdare eder', 'Hantal'],
       clues: 'İpuçları…', cluesO: ['Çok belirsizdi', 'Tam kıvamındaydı', 'Çok kolaydı'],
@@ -440,7 +440,7 @@ const T = {
       hintFair: 'Kelime başına 1 ücretsiz ipucu, fazlası için kısa reklam. Adil mi?', hintFairO: ['Adil', 'Puanla almayı tercih ederim', 'Daha çok ücretsiz ipucu olsun', 'Emin değilim'],
       adsOk: 'Seviyeler arasında reklam (kelime ortasında asla) olursa…', adsOkO: ['Sorun değil', 'Seyrekse olur', 'Oynamayı bırakırım', 'Kaldırmak için para öderim'],
       modes: 'Hangilerini isterdin? (birden fazla seçebilirsin)',
-      modesO: ['Baskıyı Durdur: bonusu al ya da daha fazlası için riske gir', 'İkiz Baskı: aynı anda iki yığın', 'Serbest Dizgi: hata sınırı yok, sadece rahatla', 'Temalı bölümler (hayvanlar, yemek…)', 'Arkadaşlarla oyna ya da yarış', 'Süreli mod'],
+      modesO: ['Şansını dene: bonusu al ya da daha fazlası için riske gir', 'Yan yana iki kelime birden', 'Rahat mod: hata sınırı yok', 'Temalı bölümler (hayvanlar, yemek…)', 'Arkadaşlarla oyna ya da yarış', 'Süreli mod'],
       daily: 'Günlük Bulmacayı denedin mi? Onun için geri gelir misin?', dailyO: ['Evet, her gün', 'Bazen', 'Hayır', 'Denemedim'],
       idea: "Littera'yı daha iyi yapmak için en iyi fikrin:",
       other: 'Başka bir şey? Hatalar, sevdiklerin, sevmediklerin…',
@@ -457,13 +457,13 @@ const T = {
 // exactly once (place, throw away), then the player finishes.
 const TUTORIAL = {
   en: { w: 'SONG', c: 'a short piece of music with words', seed: 'SXGON', casts: 'ER', steps: [
-    { say: "Here's the clue below. You're spelling a <b>4-letter word</b>. Letters arrive in this stack, and you always play the <b>glowing block at the bottom</b>.", next: 'Got it' },
+    { say: "Here's the clue below. You're spelling a <b>4-letter word</b>. Letters arrive in this stack, and you always play the <b>glowing letter at the bottom</b>.", next: 'Got it' },
     { say: '<b>S</b> is in the word. <b>Tap</b> the stack (or flick the letter <b>down</b>) to place it.', act: 'set', hand: 'tap' },
     { say: "<b>X</b> isn't in the word. <b>Flick it right</b> into the bin to throw it away.", act: 'scrap', hand: 'right' },
     { say: "Now finish the word yourself: place letters that fit, throw away the rest. A letter that doesn't fit costs one of your <b>3 slips</b>. Stuck? Tap <b>Hint</b>.", next: "Let's go" },
   ] },
   tr: { w: 'GEMİ', c: 'Su üstünde yüzen, insan ve yük taşımaya yarayan büyük taşıt', seed: 'GZMEİ', casts: 'AR', steps: [
-    { say: 'İpucu aşağıda. <b>4 harfli</b> bir kelime yazıyorsun. Harfler bu yığında gelir ve her zaman <b>en alttaki parlayan harfi</b> oynarsın.', next: 'Anladım' },
+    { say: 'İpucu aşağıda. <b>4 harfli</b> bir kelime arıyorsun. Harfler bu sütunda sırayla gelir; her seferinde <b>en alttaki parlayan harfle</b> oynarsın.', next: 'Anladım' },
     { say: '<b>G</b> kelimede var. Yerleştirmek için yığına <b>dokun</b> ya da harfi <b>aşağı fırlat</b>.', act: 'set', hand: 'tap' },
     { say: '<b>Z</b> kelimede yok. Atmak için onu <b>sağa, çöpe fırlat</b>.', act: 'scrap', hand: 'right' },
     { say: 'Şimdi kelimeyi sen bitir: uyan harfleri yerleştir, gerisini at. Uymayan bir harf <b>3 hata hakkından</b> birini götürür. Takılırsan <b>İpucu</b>’na dokun.', next: 'Başla' },
