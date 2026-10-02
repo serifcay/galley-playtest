@@ -326,7 +326,7 @@ const T = {
     clue: 'Clue', proverb: 'Proverb', idiom: 'Idiom',
     letters: n => `${n} letters`, hintsUsed: n => ` · ${n} hint used`,
     reset: 'Reset', hint: 'Hint', hintAd: '▶ Hint',
-    streak: n => `${n} in a row!`, tipSpecialty: 'Gold blocks with a sparkle are special: use one in the word for +60 points.', tipThrew: "That letter was in the word! Throw away only letters that don't fit; that one will come round again.", gotIt: 'Got it',
+    streak: n => `${n} in a row!`, tipSpecialty: 'Gold blocks with a sparkle are special: use one in the word for +60 points.', gotIt: 'Got it',
     noSpot: 'No open spot', printed: p => `Printed! +${p}`, specialty: 'Specialty sort', hintToast: 'Hint', adHint: 'Hint · no penalty', oneMore: 'One more slip',
     levelComplete: n => `Level ${n} complete`, points: p => `+${p} points`, replayNote: 'Replay: stars can improve, points are only for the first clear.',
     next: 'Next level', home: 'Home', backToLevels: 'Back to levels', allLevels: "You've played every demo level. Thank you!",
@@ -398,7 +398,7 @@ const T = {
     clue: 'İpucu', proverb: 'Atasözü', idiom: 'Deyim',
     letters: n => `${n} harf`, hintsUsed: n => ` · ${n} ipucu kullanıldı`,
     reset: 'Sıfırla', hint: 'İpucu', hintAd: '▶ İpucu',
-    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıltılı altın harfler özeldir: kelimede kullanırsan +60 puan.', tipThrew: 'O harf kelimede vardı! Yalnızca uymayan harfleri at; o harf yeniden gelecek.', gotIt: 'Anladım',
+    streak: n => `Üst üste ${n}!`, tipSpecialty: 'Parıltılı altın harfler özeldir: kelimede kullanırsan +60 puan.', gotIt: 'Anladım',
     noSpot: 'Boş yer yok', printed: p => `Basıldı! +${p}`, specialty: 'Özel harf', hintToast: 'İpucu', adHint: 'İpucu · puan kaybı yok', oneMore: 'Bir hak daha',
     levelComplete: n => `${n}. seviye tamam`, points: p => `+${p} puan`, replayNote: 'Tekrar: yıldızlar artabilir, puan yalnızca ilk geçişte verilir.',
     next: 'Sonraki seviye', home: 'Ana sayfa', backToLevels: 'Seviyelere dön', allLevels: 'Tüm deneme seviyelerini oynadın. Teşekkürler!',
@@ -622,7 +622,6 @@ function doSet() {
 }
 function doScrap() {
   if (!canAct() || !G.galley.length) return;
-  if (needs().includes(G.galley[0].l) && !tutStep()) pendingTip = 'threw';
   if (!tutAllows('scrap')) return render();
   tutDone('scrap');
   const live = G.galley.shift();
@@ -881,14 +880,11 @@ function render(stamped = []) {
   $('gestureHint').innerHTML = store.get('tutorialDone', false) ? '' : (touch ? t().gesture : t().gestureDesk);
   renderCoach();
 }
-// One-time tips: what gold (specialty) blocks are for, and what throwing away
-// a needed letter means.
-let tipOpen = null, pendingTip = null;
+// One-time tip: what gold (specialty) blocks are for.
+let tipOpen = null;
 function maybeTip() {
   if (tipOpen || tutStep()) return !!tipOpen;
-  if (pendingTip === 'threw' && !store.get('tip.threw', false)) { store.set('tip.threw', true); tipOpen = t().tipThrew; }
-  else if (G.galley.some(b => b.sp) && !store.get('tip.specialty', false)) { store.set('tip.specialty', true); tipOpen = t().tipSpecialty; }
-  pendingTip = null;
+  if (G.galley.some(b => b.sp) && !store.get('tip.specialty', false)) { store.set('tip.specialty', true); tipOpen = t().tipSpecialty; }
   return !!tipOpen;
 }
 function renderCoach() {
